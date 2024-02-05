@@ -36,9 +36,7 @@ pacman::p_load(here,
                brglm2, sandwich,
                effectsize, marginaleffects, performance,
                report, modelsummary,
-               ggeffects, hrbrthemes, viridis, ggpubr,
-               install = TRUE,
-               update = FALSE)
+               ggeffects, hrbrthemes, viridis, ggpubr)
 ```
 
 ## Usage
