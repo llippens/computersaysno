@@ -1,0 +1,172 @@
+---
+title: "CSN -- Main analyses"
+author: "Louis Lippens"
+format:
+  html:
+    toc: true
+    code-fold: true
+---
+
+# Setup
+```{r}
+source(file.path(here::here(), "code", "csn_setup.R"))
+```
+
+
+# Analyses
+## Base models
+```{r}
+lnr.frml <- "gpt_score ~ "
+model.link <- ". ~ ."
+
+lnr.base.m <- lm(paste0(lnr.frml, "can_minority"),
+                 data = data.csn)
+lnr.base.i <- lm(paste0(lnr.frml, "can_identity"),
+                 data = data.csn)
+lnr.base.sex <- lm(paste0(lnr.frml, "can_sex"),
+                   data = data.csn)
+
+lnr <- list(minority = lnr.base.m,
+            identity = lnr.base.i)
+lnr <- list(minority = lnr.base.m,
+            identity = lnr.base.i,
+            sex = lnr.base.sex)
+```
+
+## Linear models
+```{r}
+lnr.l <- list()
+
+# Ethnicity
+for(base in c("minority", "identity")){
+  m.id <- str_c("can_", base)
+  
+  ## Main effect
+  lnr.l[[base]][[1]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+  
+  lnr.l[[base]][[2]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(can.vars.mx, collapse = " + "),
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+  
+  lnr.l[[base]][[3]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(can.vars.mx, collapse = " + "),
+            paste0(can.vars.occ, collapse = " + "),
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+  
+  ## Main effect & controls
+  lnr.l[[base]][[4]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(can.vars.mx, collapse = " + "),
+            paste0(can.vars.occ, collapse = " + "),
+            paste0(vac.vars.c, collapse = " + "),
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+  
+  lnr.l[[base]][[5]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(can.vars.mx, collapse = " + "),
+            paste0(can.vars.occ, collapse = " + "),
+            paste0(vac.vars.c, collapse = " + "),
+            paste0(vac.vars.exp, collapse = " + "),
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+  
+  lnr.l[[base]][[6]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(can.vars.mx, collapse = " + "),
+            paste0(can.vars.occ, collapse = " + "),
+            paste0(vac.vars.lang, collapse = " + "),
+            paste0(vac.vars.c, collapse = " + "),
+            paste0(vac.vars.exp, collapse = " + "),
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+  
+  lnr.l[[base]][[7]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(can.vars.mx, collapse = " + "),
+            paste0(can.vars.occ, collapse = " + "),
+            paste0(vac.vars.lang, collapse = " + "),
+            paste0(vac.vars.jt, collapse = " + "),
+            paste0(vac.vars.c, collapse = " + "),
+            paste0(vac.vars.exp, collapse = " + "),
+            paste0(gpt.vars.c, collapse = " + "),
+            sep = " + ")
+    ))
+}
+
+# Sex
+lnr.l[["sex"]][[1]] <- lnr[["sex"]] %>%
+  update(as.formula(
+    paste(model.link,
+          paste0(gpt.vars.c, collapse = " + "),
+          sep = " + ")
+  ))
+
+lnr.l[["sex"]][[2]] <- lnr[["sex"]] %>%
+  update(as.formula(
+    paste(model.link,
+          paste0("can_identity", collapse = " + "),
+          paste0(can.vars.occ, collapse = " + "),
+          paste0(vac.vars.lang, collapse = " + "),
+          paste0(vac.vars.jt, collapse = " + "),
+          paste0(vac.vars.c, collapse = " + "),
+          paste0(vac.vars.exp, collapse = " + "),
+          paste0(gpt.vars.c, collapse = " + "),
+          sep = " + ")
+  ))
+
+```
+
+## Model summaries
+### Discrimination by ethnic minority status
+```{r}
+modelsummary_cstm(lnr.l$minority, bs.r = 2000)
+
+for(l in c(1:length(lnr.l$minority))){
+  cat("\n", l, "\n")
+  p_adj_transformer(lnr.l$minority[[l]]) %>%
+    print()
+}
+```
+
+### Discrimination by ethnic identity
+```{r}
+modelsummary_cstm(lnr.l$identity, bs.r = 2000)
+
+for(l in c(1:length(lnr.l$identity))){
+  cat("\n", l, "\n")
+  p_adj_transformer(lnr.l$identity[[l]]) %>%
+    print()
+}
+```
+
+### Discrimination by sex
+```{r}
+modelsummary_cstm(lnr.l$sex, bs.r = 2000)
+
+for(l in c(1:length(lnr.l$sex))){
+  cat("\n", l, "\n")
+  p_adj_transformer(lnr.l$sex[[l]]) %>%
+    print()
+}
+```

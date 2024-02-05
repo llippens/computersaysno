@@ -1,0 +1,131 @@
+---
+title: "CSN -- Heterogeneity analyses: job characteristics"
+author: "Louis Lippens"
+format:
+  html:
+    toc: true
+    code-fold: true
+---
+
+# Setup
+```{r}
+source(file.path(here::here(), "code", "csn_setup.R"))
+```
+
+
+# Analyses
+## Base models
+```{r}
+lnr.base.m <- lm(paste0(lnr.frml, "can_minority"),
+                 data = data.csn)
+lnr.base.i <- lm(paste0(lnr.frml, "can_identity"),
+                 data = data.csn)
+lnr.base.sex <- lm(paste0(lnr.frml, "can_sex"),
+                   data = data.csn)
+
+lnr <- list(minority = lnr.base.m,
+            identity = lnr.base.i,
+            sex = lnr.base.sex)
+```
+
+## Linear models
+```{r}
+list.het.job <- list()
+
+for(base in c("minority", "identity")){
+  list.het.job[[base]] <- lnr[[base]] %>%
+    update(as.formula(
+      paste(model.link,
+            paste0(gpt.vars.c, collapse = " + "),
+            paste0(vac.vars.c, collapse = " + "),
+            paste0("can_", base, "*can_sex"),
+            paste0("can_", base, "*can_occupation"),
+            paste0("can_", base, "*vac_experience_requested"),
+            paste0(str_c("can_", base, " * ", vac.vars.jt), collapse = " + "),
+            paste0(str_c("can_", base, " * ", vac.vars.lang), collapse = " + "),
+            sep = " + ")
+    ))
+}
+
+list.het.job[["sex"]] <- lnr[["sex"]] %>%
+  update(as.formula(
+    paste(model.link,
+          paste0(gpt.vars.c, collapse = " + "),
+          paste0(vac.vars.c, collapse = " + "),
+          paste0("can_sex", "*can_minority"),
+          paste0("can_sex", "*can_occupation"),
+          paste0("can_sex", "*vac_experience_requested"),
+          paste0(str_c("can_sex", " * ", vac.vars.jt), collapse = " + "),
+          paste0(str_c("can_sex", " * ", vac.vars.lang), collapse = " + "),
+          sep = " + ")
+  ))
+
+# Robustness of gender identity result to occupational female share
+list.het.job[["sex_female_occ"]] <- lnr[["sex"]] %>%
+  update(as.formula(
+    paste(model.link,
+          paste0(gpt.vars.c, collapse = " + "),
+          paste0(vac.vars.c, collapse = " + "),
+          paste0("can_sex", "*can_minority"),
+          paste0("can_sex", "*can_isco08_female"),
+          paste0("can_sex", "*vac_experience_requested"),
+          paste0(str_c("can_sex", " * ", vac.vars.jt), collapse = " + "),
+          paste0(str_c("can_sex", " * ", vac.vars.lang), collapse = " + "),
+          sep = " + ")
+  ))
+```
+
+## Model summaries
+```{r}
+modelsummary_cstm(list.het.job, bs.r = 2000)
+
+for(base in names(list.het.job)){
+  cat("\n", base, "\n")
+  p_adj_transformer(list.het.job[[base]]) %>%
+    print()
+}
+```
+
+# Predictions
+## Function to generate predictions by different variables
+```{r}
+het.pred <- list()
+
+generate_predictions <- function(het_var, key) {
+  categories <- c("minority", "identity", "sex")
+  pred_list <- list()
+  
+  for (cat in categories) {
+    pred_list[[cat]] <- 
+      predictions(
+        list.het.job[[cat]],
+        vcov = ~vac_uid,
+        by = c(paste0("can_", cat), het_var),
+        conf_level = .95
+      )
+  }
+  
+  het.pred[[key]] <<- pred_list
+}
+```
+
+## Define heterogeneity variables and their corresponding keys
+```{r}
+het.vars <- list(
+  occ = "can_occupation",
+  jt = "vac_job_type",
+  wh = "vac_work_hours",
+  ss = "vac_shift_system",
+  du = "vac_lang_dutch",
+  fr = "vac_lang_french",
+  en = "vac_lang_english",
+  exp = "vac_experience_requested"
+)
+```
+
+## Generate predictions
+```{r}
+for (key in names(het.vars)) {
+  generate_predictions(het.vars[[key]], key)
+}
+```

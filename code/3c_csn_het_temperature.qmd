@@ -1,0 +1,58 @@
+---
+title: "CSN -- Heterogeneity analyses: sampling strategy (temperature)"
+author: "Louis Lippens"
+format:
+  html:
+    toc: true
+    code-fold: true
+---
+
+# Setup
+```{r}
+source(file.path(here::here(), "code", "csn_setup.R"))
+```
+
+
+# Analyses
+## Identity x Temperature
+```{r}
+lnr.tmp.eth <- list()
+
+lnr.tmp.eth[[1]] <- lm(paste0(lnr.frml, "can_identity"),
+                       data = data.csn) %>%
+  update(as.formula(
+    paste(model.link,
+          paste0(str_c("can_identity", " * ", "gpt_temperature"),
+                 collapse = " + "),
+          paste0(str_c("can_sex", " * ", "gpt_temperature"), 
+                 collapse = " + "),
+          sep = " + ")
+  ))
+
+lnr.tmp.eth[[2]] <- lm(paste0(lnr.frml, "can_identity"),
+                       data = data.csn) %>%
+  update(as.formula(
+    paste(model.link,
+          paste0(str_c("can_identity", " * ", "gpt_temperature"),
+                 collapse = " + "),
+          paste0(str_c("can_sex", " * ", "gpt_temperature"),
+                 collapse = " + "),
+          paste0(can.vars.occ, collapse = " + "),
+          paste0(vac.vars.lang, collapse = " + "),
+          paste0(vac.vars.jt, collapse = " + "),
+          paste0(vac.vars.exp, collapse = " + "),
+          paste0(vac.vars.c, collapse = " + "),
+          sep = " + ")
+  ))
+```
+
+## Model summaries
+```{r}
+modelsummary_cstm(lnr.tmp.eth)
+
+for(l in c(1:length(lnr.tmp.eth))){
+  cat("\n", l, "\n")
+  p_adj_transformer(lnr.tmp.eth[[l]]) %>%
+    print()
+}
+```

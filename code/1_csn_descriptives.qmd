@@ -1,0 +1,96 @@
+---
+title: "CSN -- Descriptives"
+author: "Louis Lippens"
+format:
+  html:
+    toc: true
+    code-fold: true
+---
+
+# Setup
+```{r}
+source(file.path(here::here(), "code", "csn_setup.R"))
+```
+
+
+# Descriptives
+## Candidate reporting
+```{r}
+report_participants(
+  data = data.csn,
+  sex = "can_sex",
+  race = "can_identity"
+) %>% cat()
+```
+
+## Variable description
+### Candidate
+```{r}
+report_table(data.csn %>%
+               select(can_identity, can_sex, can_age)) %>%
+  kable() %>%
+  kable_styling()
+
+report_table(data.csn %>%
+               select(can_occupation)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+### Vacancy
+```{r}
+report_table(data.csn %>%
+               select(vac_shift_system, vac_work_hours, vac_job_type)) %>%
+  kable() %>%
+  kable_styling()
+
+report_table(data.csn %>%
+               select(vac_lang_dutch, vac_lang_french, vac_lang_english)) %>%
+  kable() %>%
+  kable_styling()
+
+report_table(data.csn %>%
+               select(vac_experience_requested, vac_province)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+### GPT-3.5 score
+```{r}
+report_table(data.csn %>%
+               select(gpt_score)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+### GPT-3.5 sampling strategy
+```{r}
+report_table(data.csn %>%
+               select(gpt_temperature)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Score by identity
+```{r}
+for(group in data.csn$can_identity %>% unique()){
+  cat(group, "\n")
+  cat("Mean: ")
+  data.csn %>%
+    filter(can_identity == group) %>%
+    select(gpt_score) %>%
+    pull() %>%
+    mean() %>%
+    round(2) %>%
+    cat("\n")
+  cat("SD: ")
+  data.csn %>%
+    filter(can_identity == group) %>%
+    select(gpt_score) %>%
+    pull() %>%
+    sd() %>%
+    round(2) %>%
+    cat()
+  cat("\n\n")
+}
+```

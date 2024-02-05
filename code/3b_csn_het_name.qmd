@@ -1,0 +1,45 @@
+---
+title: "CSN -- Heterogeneity analyses: names"
+author: "Louis Lippens"
+format:
+  html:
+    toc: true
+    code-fold: true
+---
+
+# Setup
+```{r}
+source(file.path(here::here(), "code", "csn_setup.R"))
+```
+
+
+# Frequencies
+```{r}
+name_freq_table <- data.csn %>%
+  group_by(can_identity, can_sex, can_name) %>%
+  summarise(freq = n(),
+            mscore = mean(gpt_score)) %>%
+  ungroup()
+
+kable(name_freq_table) %>%
+  kable_styling()
+
+labels <- name_freq_table %>%
+  group_by(can_identity, can_sex) %>%
+  summarise(
+    min_mscore = min(mscore),
+    max_mscore = max(mscore),
+    name_min = can_name[which.min(mscore)],
+    name_max = can_name[which.max(mscore)]
+  )
+
+id_means <- data.csn %>%
+  group_by(can_identity, can_sex) %>%
+  summarise(freq = n(),
+            `m(score)` = mean(gpt_score),
+            `sd(score)` = sd(gpt_score)) %>%
+  ungroup()
+
+kable(id_means) %>%
+  kable_styling()
+```
