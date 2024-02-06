@@ -141,7 +141,7 @@ generate_and_save_plots <- function(key, cat, xtitle) {
   varlen <- length(unique(data.csn[[facet_var]]))
   
   if (varlen > 10) {
-    h <- 20
+    h <- 18
     tsize <- 9
   } else if(varlen > 6){
     h <- 12
