@@ -50,11 +50,11 @@ By following the above steps, you should be able to replicate the environment an
 ## Citation
 If you use or refer to the contents of the original [manuscript](https://doi.org/10.1016/j.chbah.2024.100054) in your own work, please use the following citation.
 
-```Lippens, L. (2024). Computer says ‘no’: Exploring systemic bias in ChatGPT using an audit approach. _Computers in Human Behavior: Artificial Humans, 100054_. https://doi.org/10.1016/j.chbah.2024.100054```
+```Lippens, L. (2024). Computer says ‘no’: Exploring systemic bias in ChatGPT using an audit approach. Computers in Human Behavior: Artificial Humans, 100054. https://doi.org/10.1016/j.chbah.2024.100054```
 
 If you use the data, code, or figures from this project in your own work, please use the following citation. (Also consider citing the original manuscript.)
 
-```Lippens, L. (2024). _Computer says 'no'_. The Open Science Framework. Retrieved from osf.io/vezt7```
+```Lippens, L. (2024). Computer says 'no'. The Open Science Framework. Retrieved from osf.io/vezt7```
 
 ## License
 This project is made available under the Creative Commons Attribution 4.0 International License (CC BY 4.0). This license allows you to share, copy, distribute, and transmit the work, as well as to adapt the work and make commercial use of it, provided that the original author and source are credited. For any use or distribution, you must make clear to others the license terms of this work.
