@@ -54,7 +54,7 @@ If you use or refer to the contents of the original [manuscript](https://doi.org
 Lippens, L. (2024). Computer says ‘no’: Exploring systemic bias in ChatGPT using an audit approach. Computers in Human Behavior: Artificial Humans, 2(1), 100054. https://doi.org/10.1016/j.chbah.2024.100054
 ```
 
-The data, code, and figures are part of an [OSF project](osf.io/vezt7). If you use any of these elements in your own work, please use the following citation. (Also consider citing the original [manuscript](https://doi.org/10.1016/j.chbah.2024.100054).)
+The data, code, and figures are part of an [OSF project](https://osf.io/vezt7). If you use any of these elements in your own work, please use the following citation. (Also consider citing the original [manuscript](https://doi.org/10.1016/j.chbah.2024.100054).)
 
 ```
 Lippens, L. (2024). Computer says ‘no’. The Open Science Framework. osf.io/vezt7
